@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <title>ESP32 GPIO2 Control</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -38,7 +37,6 @@
 </head>
 
 <body>
-
 <div class="container">
   <h1>ESP32 GPIO2 Control</h1>
   <button id="btnOn" class="on">ON</button>
@@ -46,8 +44,7 @@
   <div class="status" id="status">Connecting...</div>
 </div>
 
-<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-
+<script src="https://unpkg.com/mqtt@4.3.7/dist/mqtt.min.js"></script>
 <script>
   const TOPIC_CMD = "Ma/cmd";
   const TOPIC_STATUS = "Ma/status";
@@ -61,7 +58,7 @@
   const statusEl = document.getElementById('status');
 
   client.on('connect', () => {
-    console.log("Connected to HiveMQ");
+    console.log("MQTT CONNECTED =", client.connected);
     statusEl.textContent = "Connected";
     statusEl.style.color = "blue";
     client.subscribe(TOPIC_STATUS);
@@ -70,7 +67,6 @@
   client.on('message', (topic, message) => {
     const msg = message.toString();
     console.log("Received:", topic, msg);
-
     if (msg === "1") {
       statusEl.textContent = "LED: ON";
       statusEl.style.color = "green";
@@ -81,15 +77,19 @@
     }
   });
 
-  document.getElementById("btnOn").onclick = () => {
-    console.log("Send ON");
-    client.publish(TOPIC_CMD, "1");
-  };
+  function send(cmd) {
+    if (client.connected) {
+      console.log("Publishing to", TOPIC_CMD, ":", cmd);
+      client.publish(TOPIC_CMD, cmd);
+      statusEl.textContent = "Sending...";
+    } else {
+      console.warn("MQTT not connected yet!");
+      statusEl.textContent = "MQTT not connected!";
+    }
+  }
 
-  document.getElementById("btnOff").onclick = () => {
-    console.log("Send OFF");
-    client.publish(TOPIC_CMD, "0");
-  };
+  document.getElementById("btnOn").onclick = () => send("1");
+  document.getElementById("btnOff").onclick = () => send("0");
 </script>
 
 </body>
