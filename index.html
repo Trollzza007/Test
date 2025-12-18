@@ -55,7 +55,7 @@
   const clientId = 'web_' + Math.random().toString(16).substr(2, 8);
 
   // HiveMQ Public Broker - wss:// + port 8884 + path /mqtt
-  const client = mqtt.connect('clientId-O8U2W4hhWr', {
+  const client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt', {
     clientId: clientId,
     keepalive: 60,
     reconnectPeriod: 1000,
@@ -127,3 +127,4 @@
 </body>
 
 </html>
+
